@@ -1,69 +1,68 @@
-<!DOCTYPE html><html lang="ar">
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>احلا مسا</title>
-<style>
-  :root { --bg:#000; }
-  html,body { height:100%; margin:0; background:var(--bg); color:#fff; font-family: Arial, Helvetica, sans-serif; }
-  .wrap { min-height:100vh; display:flex; justify-content:center; align-items:center; padding: 1rem; box-sizing:border-box; overflow:auto; }
-  .stage { position:relative; }/* الصورة بحجمها الأصلي + fade in */ img { display:block; width:auto; height:auto; max-width: none; max-height: none; opacity:0; animation: fadeIn 2s forwards; cursor:pointer; } @keyframes fadeIn { from { opacity:0; transform: scale(1.02); } to { opacity:1; transform: scale(1); } }
-
-/* Overlay نصي يظهر فقط عند الحاجة */ #playOverlay { position:fixed; inset:0; display:flex; align-items:flex-end; justify-content:center; pointer-events:none; padding-bottom: 40px; opacity:0; transition: opacity .5s ease; } #playOverlay.visible { opacity:1; pointer-events:auto; } .hint-text { font-size:22px; color:#fff; background: linear-gradient(135deg, rgba(255,255,255,0.15), rgba(255,255,255,0.05)); padding:14px 28px; border-radius:16px; backdrop-filter: blur(6px); animation: pulse 1.5s infinite; box-shadow: 0 6px 20px rgba(0,0,0,0.6); } @keyframes pulse { 0% { transform: scale(1); opacity:0.9; } 50% { transform: scale(1.08); opacity:1; } 100% { transform: scale(1); opacity:0.9; } } </style>
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>خد دا</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden; /* لمنع ظهور شريط التمرير */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #000;
+        }
+        img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+        #playButton {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 15px 30px;
+            font-size: 18px;
+            color: white;
+            background-color: rgba(0, 0, 0, 0.7);
+            border: 2px solid white;
+            border-radius: 5px;
+            cursor: pointer;
+            display: none; /* الزر يكون مخفي في البداية */
+        }
+    </style>
 </head>
 <body>
-  <div class="wrap">
-    <div class="stage">
-      <!-- ضع رابط صورتك هنا -->
-      <img id="hero" src="https://i.pinimg.com/474x/da/cb/22/dacb2211538142df6e665c8042686043.jpg" alt="صورة" />
-    </div>
-  </div>  <!-- صوت: ضع هنا اسم ملف الصوت الموجود في نفس مجلد الصفحة --><audio id="bgAudio" src="ss.mp3" preload="auto" loop playsinline webkit-playsinline></audio>
 
-  <!-- Overlay نصي فقط لو فشل التشغيل التلقائي -->  <div id="playOverlay">
-    <div class="hint-text">اضغط علي الصورة 👆</div>
-  </div><script>
-(function(){
-  const audio = document.getElementById('bgAudio');
-  const overlay = document.getElementById('playOverlay');
-  const hero = document.getElementById('hero');
+    <img src="https://i.pinimg.com/474x/da/cb/22/dacb2211538142df6e665c8042686043.jpg" alt="صورة مميزة">
 
-  function showOverlay(){ overlay.classList.add('visible'); }
-  function hideOverlay(){ overlay.classList.remove('visible'); }
+    <audio id="myAudio" src="ss.mp3" preload="auto" loop></audio>
 
-  // حاول التشغيل التلقائي عند التحميل
-  function tryPlay(){
-    audio.loop = true;
-    const p = audio.play();
-    if (p !== undefined) {
-      p.then(()=> { hideOverlay(); })
-       .catch((err) => {
-        console.warn('Autoplay blocked:', err);
-        showOverlay();
-      });
-    }
-  }
+    <button id="playButton">اضغط علي الهدية 🎁</button>
 
-  // تشغيل الصوت عند الضغط على الصورة
-  function startPlayback(){
-    audio.play().then(()=> { hideOverlay(); })
-    .catch(err=>{
-      console.warn('Playback failed after user gesture:', err);
-      showOverlay();
-    });
-  }
+    <script>
+        const audio = document.getElementById("myAudio");
+        const playButton = document.getElementById("playButton");
 
-  document.addEventListener('DOMContentLoaded', tryPlay);
-  hero.addEventListener('click', function(){ startPlayback(); });
+        // محاولة تشغيل الصوت تلقائياً
+        audio.play().then(() => {
+            // إذا نجح التشغيل التلقائي، أخفي الزر
+            playButton.style.display = 'none';
+        }).catch(() => {
+            // إذا فشل التشغيل التلقائي، أظهر الزر
+            playButton.style.display = 'block';
+        });
 
-  // تشغيل عند أول تفاعل مع المستخدم
-  ['click','touchstart','keydown'].forEach(evt=>{
-    function once(){
-      startPlayback();
-      document.removeEventListener(evt, once);
-    }
-    document.addEventListener(evt, once, {passive:true});
-  });
-})();
-</script></body>
+        // تشغيل الصوت عند الضغط على الزر
+        playButton.addEventListener('click', () => {
+            audio.play();
+            playButton.style.display = 'none';
+        });
+    </script>
+
+</body>
 </html>
